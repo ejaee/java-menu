@@ -6,14 +6,12 @@ import menu.domain.Coach;
 import menu.domain.CoachList;
 import menu.domain.RandomLottery;
 import menu.domain.Remark;
-import menu.domain.Result;
 import menu.domain.ResultList;
 import menu.domain.UserList;
 import menu.service.InputViewService;
 import menu.service.RemoveMenu;
 import menu.utils.Constants;
 import menu.view.OutputView;
-import org.assertj.core.util.Arrays;
 
 public class MenuController {
 
@@ -33,7 +31,7 @@ public class MenuController {
 
         UserList menuList = readRemoveMenu(coachList);
 
-        recommendMenu(menuList);
+        recommendMenu(menuList, coachList);
 
     }
 
@@ -53,7 +51,7 @@ public class MenuController {
         return UserList.from(remarks);
     }
 
-    public void recommendMenu(UserList userList) {
+    public void recommendMenu(UserList userList, CoachList coachList) {
         RandomLottery randomLottery = new RandomLottery();
         outputView.print(Constants.RESULT_MESSAGE);
         List<String> categoryResult = new ArrayList<>();
@@ -73,10 +71,25 @@ public class MenuController {
 
         }
         outputView.printResult(new ResultList(categoryResult));
-        recommendMenuName(randomNumbers);
+        recommendMenuName(randomNumbers, coachList, userList);
     }
-    public void recommendMenuName(List<String> randomNumbers) {
-        List<String> categoryResult = new ArrayList<>();
+    public void recommendMenuName(List<String> randomNumbers, CoachList coachList, UserList userList) {
+        List<String> menuResult;
+        RandomLottery randomLottery = new RandomLottery();
+
+        for (Remark remark : userList.getUserList()) {
+            menuResult = new ArrayList<>();
+            menuResult.add(remark.getCoach().getName());
+
+            for (int i = 0; i < 5; ++i) {
+                menuResult.add(randomLottery.setShuffleMenu(remark.getCategoryMenu().get(Integer.parseInt(randomNumbers.get(i)))));
+            }
+            outputView.printResult(new ResultList(menuResult));
+        }
+
+
+
+
 
 
     }
